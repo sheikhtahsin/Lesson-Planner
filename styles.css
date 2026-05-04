@@ -46,6 +46,29 @@ button:hover {
   border-color: var(--accent);
 }
 
+.restore-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.restore-button:hover {
+  border-color: var(--accent);
+}
+
+.restore-button input {
+  display: none;
+}
+
 .primary {
   background: var(--accent);
   border-color: var(--accent);

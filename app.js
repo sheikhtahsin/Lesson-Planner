@@ -139,6 +139,8 @@ function init() {
   document.querySelector("#pasteLesson").addEventListener("click", pasteLessonFields);
   document.querySelector("#exportLessonPdf").addEventListener("click", exportActiveLessonPdf);
   document.querySelector("#copySummary").addEventListener("click", copySummary);
+  document.querySelector("#backupData").addEventListener("click", backupPlannerData);
+  document.querySelector("#restoreData").addEventListener("change", restorePlannerData);
   document.querySelector("#clearCurrentWeek").addEventListener("click", clearCurrentWeek);
   document.querySelector("#clearEverything").addEventListener("click", clearEverything);
 
@@ -744,6 +746,61 @@ function clearEverything() {
   localStorage.removeItem("economics-business-source-notes-v1");
   render();
   showToast("Everything cleared");
+}
+
+function backupPlannerData() {
+  const data = {
+    app: "economics-business-weekly-planner",
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    plans,
+    weekPlans
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `economics-business-planner-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  showToast("Planner data backed up");
+}
+
+async function restorePlannerData(event) {
+  const file = event.target.files?.[0];
+  event.target.value = "";
+  if (!file) return;
+
+  try {
+    const data = JSON.parse(await file.text());
+    if (!isValidPlannerBackup(data)) {
+      showToast("Backup file not recognised");
+      return;
+    }
+
+    const ok = window.confirm("Restore this backup? It will replace the saved planner data in this browser.");
+    if (!ok) return;
+
+    plans = data.plans || {};
+    weekPlans = data.weekPlans || {};
+    persistPlans();
+    localStorage.setItem(weekPlansKey, JSON.stringify(weekPlans));
+    render();
+    showToast("Planner data restored");
+  } catch {
+    showToast("Could not restore backup");
+  }
+}
+
+function isValidPlannerBackup(data) {
+  return Boolean(
+    data &&
+      data.app === "economics-business-weekly-planner" &&
+      typeof data.plans === "object" &&
+      typeof data.weekPlans === "object"
+  );
 }
 
 function saveWeekPlan(showMessage = true) {
