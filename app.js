@@ -30,8 +30,10 @@ const timetable = [
 
 const storageKey = "economics-business-term2-plans-v1";
 const weekPlansKey = "economics-business-week-plans-v1";
+const snapshotAppliedKey = "economics-business-published-snapshot-applied-v1";
 let plans = loadObject(storageKey);
 let weekPlans = loadObject(weekPlansKey);
+applyPublishedSnapshot();
 let selectedWeek = 3;
 let activeFilter = "all";
 let activeSlot = null;
@@ -140,6 +142,7 @@ function init() {
   document.querySelector("#exportLessonPdf").addEventListener("click", exportActiveLessonPdf);
   document.querySelector("#copySummary").addEventListener("click", copySummary);
   document.querySelector("#backupData").addEventListener("click", backupPlannerData);
+  document.querySelector("#publishSnapshot").addEventListener("click", publishSnapshotData);
   document.querySelector("#restoreData").addEventListener("change", restorePlannerData);
   document.querySelector("#clearCurrentWeek").addEventListener("click", clearCurrentWeek);
   document.querySelector("#clearEverything").addEventListener("click", clearEverything);
@@ -749,23 +752,42 @@ function clearEverything() {
 }
 
 function backupPlannerData() {
-  const data = {
+  const data = getPlannerDataSnapshot();
+  downloadTextFile(
+    `economics-business-planner-backup-${new Date().toISOString().slice(0, 10)}.json`,
+    JSON.stringify(data, null, 2),
+    "application/json"
+  );
+  showToast("Planner data backed up");
+}
+
+function publishSnapshotData() {
+  const data = getPlannerDataSnapshot();
+  const content = `window.PLANNER_SNAPSHOT = ${JSON.stringify(data, null, 2)};\n`;
+  downloadTextFile("planner-data.js", content, "text/javascript");
+  showToast("Snapshot file created");
+}
+
+function getPlannerDataSnapshot() {
+  return {
     app: "economics-business-weekly-planner",
     version: 1,
     exportedAt: new Date().toISOString(),
     plans,
     weekPlans
   };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+}
+
+function downloadTextFile(filename, content, type) {
+  const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `economics-business-planner-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  link.download = filename;
   document.body.append(link);
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
-  showToast("Planner data backed up");
 }
 
 async function restorePlannerData(event) {
@@ -801,6 +823,18 @@ function isValidPlannerBackup(data) {
       typeof data.plans === "object" &&
       typeof data.weekPlans === "object"
   );
+}
+
+function applyPublishedSnapshot() {
+  const snapshot = window.PLANNER_SNAPSHOT;
+  if (!isValidPlannerBackup(snapshot) || !snapshot.exportedAt) return;
+  const appliedAt = localStorage.getItem(snapshotAppliedKey);
+  if (appliedAt === snapshot.exportedAt) return;
+  plans = snapshot.plans || {};
+  weekPlans = snapshot.weekPlans || {};
+  persistPlans();
+  localStorage.setItem(weekPlansKey, JSON.stringify(weekPlans));
+  localStorage.setItem(snapshotAppliedKey, snapshot.exportedAt);
 }
 
 function saveWeekPlan(showMessage = true) {
