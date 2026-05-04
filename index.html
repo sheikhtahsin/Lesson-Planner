@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Economics and Business Weekly Planner</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Term 2 Planner</p>
+        <h1>Economics and Business</h1>
+      </div>
+      <div class="week-controls">
+        <button class="icon-button" id="prevWeek" type="button" aria-label="Previous week" title="Previous week">&lt;</button>
+        <label for="weekSelect">
+          Week
+          <select id="weekSelect"></select>
+        </label>
+        <button class="icon-button" id="nextWeek" type="button" aria-label="Next week" title="Next week">&gt;</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="overview-band" aria-label="Weekly overview">
+        <div>
+          <span class="metric-label">Selected week</span>
+          <strong id="selectedWeekLabel">Week 3</strong>
+        </div>
+        <div>
+          <span class="metric-label">Lessons planned</span>
+          <strong id="plannedCount">0 / 15</strong>
+        </div>
+        <div>
+          <span class="metric-label">Outcomes complete</span>
+          <strong id="coveredCount">0 / 0</strong>
+        </div>
+      </section>
+
+      <section class="toolbar" aria-label="Class filters">
+        <button class="filter-button active" data-class-filter="all" type="button">All classes</button>
+        <button class="filter-button" data-class-filter="9.2" type="button">Year 9.2</button>
+        <button class="filter-button" data-class-filter="9.4" type="button">Year 9.4</button>
+        <button class="filter-button" data-class-filter="10" type="button">Year 10</button>
+        <button id="clearCurrentWeek" class="danger" type="button">Clear this week</button>
+        <button id="clearEverything" class="danger" type="button">Clear everything</button>
+      </section>
+
+      <section class="week-planner-section" aria-label="Weekly outcomes and availability">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Week View</p>
+            <h2>Weekly Outcomes</h2>
+          </div>
+          <button id="saveWeekPlan" class="primary" type="button">Save weekly outcomes</button>
+        </div>
+        <div class="week-planner-grid">
+          <div class="class-outcomes-grid">
+            <label>
+              Year 9.2 outcomes, content and notes
+              <textarea id="weeklyOutcomes92" rows="7" placeholder="List the Year 9.2 outcomes, content focus, assessment notes and interruptions for this week."></textarea>
+            </label>
+            <div class="outcome-status-list" id="outcomeStatus92"></div>
+            <label>
+              Year 9.4 outcomes, content and notes
+              <textarea id="weeklyOutcomes94" rows="7" placeholder="List the Year 9.4 outcomes, content focus, assessment notes and interruptions for this week."></textarea>
+            </label>
+            <div class="outcome-status-list" id="outcomeStatus94"></div>
+            <label>
+              Year 10 outcomes, content and notes
+              <textarea id="weeklyOutcomes10" rows="7" placeholder="List the Year 10 outcomes, content focus, assessment notes and interruptions for this week."></textarea>
+            </label>
+            <div class="outcome-status-list" id="outcomeStatus10"></div>
+          </div>
+          <div>
+            <h3>Available lessons this week</h3>
+            <div id="availabilityList" class="availability-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="calendar-wrap" aria-label="Weekly timetable">
+        <div class="calendar" id="calendar"></div>
+      </section>
+
+      <section class="summary-section" aria-label="Weekly summary report">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Report</p>
+            <h2>Weekly Summary</h2>
+          </div>
+          <button id="copySummary" type="button">Copy summary</button>
+        </div>
+        <textarea id="weeklySummary" readonly></textarea>
+      </section>
+    </main>
+
+    <dialog id="lessonDialog">
+      <form method="dialog" class="lesson-form" id="lessonForm">
+        <div class="dialog-head">
+          <div>
+            <p class="eyebrow" id="lessonMeta">Week 3</p>
+            <h2 id="lessonTitle">Lesson plan</h2>
+          </div>
+          <button class="icon-button" value="cancel" type="submit" aria-label="Close" title="Close">x</button>
+        </div>
+
+        <section class="assistant-panel" aria-label="Lesson plan populator">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Populator</p>
+              <h3>Paste a lesson plan into the template</h3>
+            </div>
+            <div class="assistant-actions">
+              <button id="clearPaste" type="button">Clear paste</button>
+              <button id="populatePlan" class="primary" type="button">Populate form</button>
+            </div>
+          </div>
+          <textarea id="planPaste" rows="9" placeholder="Paste a lesson plan here. Use headings like Learning Intention(s), Success Criteria, Introduction, Body, Conclusion, Resources, Differentiation, Assessment and Feedback."></textarea>
+          <p class="assistant-note" id="populatorNote"></p>
+        </section>
+
+        <div class="rich-toolbar" aria-label="Text formatting tools">
+          <button type="button" data-command="bold"><strong>B</strong></button>
+          <button type="button" data-command="italic"><em>I</em></button>
+          <button type="button" data-block="h2">Large heading</button>
+          <button type="button" data-block="h3">Heading</button>
+          <button type="button" data-block="p">Normal</button>
+          <button type="button" data-command="insertUnorderedList">Bullets</button>
+          <button type="button" data-command="removeFormat">Clear format</button>
+        </div>
+
+        <div class="form-grid compact">
+          <label>
+            Learning Area
+            <input name="learningArea" value="Economics and Business">
+          </label>
+          <label>
+            Grade / Class
+            <input name="gradeClass">
+          </label>
+          <label>
+            Date
+            <input name="date" type="date">
+          </label>
+          <label>
+            Time
+            <input name="time">
+          </label>
+          <label>
+            Length
+            <input name="length">
+          </label>
+        </div>
+
+        <label>
+          APST Focus Areas
+          <textarea name="apstFocus" rows="4" placeholder="e.g. 1.5 Differentiate teaching; 2.1 Content and teaching strategies; 3.2 Plan, structure and sequence learning programs"></textarea>
+        </label>
+
+        <label>
+          Curriculum Content Description / Syllabus Outcome
+          <textarea name="curriculum" rows="3"></textarea>
+        </label>
+
+        <div class="form-grid">
+          <label>
+            Cross-curriculum priorities
+            <textarea name="crossCurriculum" rows="2"></textarea>
+          </label>
+          <label>
+            General capabilities
+            <textarea name="generalCapabilities" rows="2"></textarea>
+          </label>
+        </div>
+
+        <div class="form-grid">
+          <label>
+            Learning Intention(s)
+            <textarea name="learningIntentions" rows="3"></textarea>
+          </label>
+          <label>
+            Success Criteria
+            <textarea name="successCriteria" rows="3"></textarea>
+          </label>
+        </div>
+
+        <label>
+          Classroom management and student diversity considerations
+          <textarea name="managementDiversity" rows="3"></textarea>
+        </label>
+
+        <fieldset class="coverage-box">
+          <legend>After-class notes</legend>
+          <label>
+            Areas we could not discuss
+            <textarea name="notDiscussed" rows="5" placeholder="Note concepts, questions, examples, textbook sections, activities or outcomes that were not reached during the lesson."></textarea>
+          </label>
+          <label>
+            Follow-up / reteaching notes
+            <textarea name="coverageNotes" rows="4" placeholder="What needs to be revisited, retaught, extended or checked next lesson?"></textarea>
+          </label>
+        </fieldset>
+
+        <section class="lesson-sequence" aria-label="Lesson sequence">
+          <h3>Lesson Sequence</h3>
+          <label>
+            Introduction
+            <textarea name="introduction" rows="9"></textarea>
+          </label>
+          <label>
+            Body
+            <textarea name="body" rows="12"></textarea>
+          </label>
+          <label>
+            Conclusion
+            <textarea name="conclusion" rows="9"></textarea>
+          </label>
+        </section>
+
+        <div class="form-stack">
+          <label>
+            Resources and teaching strategies
+            <textarea name="resourcesStrategies" rows="3"></textarea>
+          </label>
+          <label>
+            Plans for differentiation
+            <textarea name="differentiation" rows="8"></textarea>
+          </label>
+          <label>
+            Assessment and feedback
+            <textarea name="assessmentFeedback" rows="8"></textarea>
+          </label>
+        </div>
+
+        <label>
+          Mentor teacher notes / signature
+          <textarea name="mentorNotes" rows="2"></textarea>
+        </label>
+
+        <div class="dialog-actions">
+          <button id="deletePlan" class="danger" type="button">Clear plan</button>
+          <div>
+            <button id="copyLesson" type="button">Copy lesson</button>
+            <button id="pasteLesson" type="button">Paste lesson</button>
+            <button id="exportLessonPdf" type="button">Export PDF</button>
+            <button value="cancel" type="submit">Close</button>
+            <button id="savePlan" class="primary" value="default" type="button">Save plan</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
