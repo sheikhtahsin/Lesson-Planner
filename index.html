@@ -3,14 +3,14 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Economics and Business Weekly Planner</title>
+    <title>Teaching Weekly Planner</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
     <header class="topbar">
       <div>
         <p class="eyebrow">Term 2 Planner</p>
-        <h1>Economics and Business</h1>
+        <h1>Teaching Weekly Planner</h1>
       </div>
       <div class="week-controls">
         <button class="icon-button" id="prevWeek" type="button" aria-label="Previous week" title="Previous week">&lt;</button>
@@ -43,6 +43,7 @@
         <button class="filter-button" data-class-filter="9.2" type="button">Year 9.2</button>
         <button class="filter-button" data-class-filter="9.4" type="button">Year 9.4</button>
         <button class="filter-button" data-class-filter="10" type="button">Year 10</button>
+        <button class="filter-button" data-class-filter="7S" type="button">Year 7 Science</button>
         <button id="backupData" type="button">Backup data</button>
         <button id="publishSnapshot" type="button">Publish snapshot</button>
         <label class="restore-button">
@@ -78,6 +79,13 @@
               <textarea id="weeklyOutcomes10" rows="7" placeholder="List the Year 10 outcomes, content focus, assessment notes and interruptions for this week."></textarea>
             </label>
             <div class="outcome-status-list" id="outcomeStatus10"></div>
+            <div class="year7-science-outcomes" id="year7ScienceOutcomes">
+              <label>
+                Year 7 Science outcomes, content and notes
+                <textarea id="weeklyOutcomes7S" rows="7" placeholder="List the Year 7 Science outcomes, content focus, assessment notes and interruptions for this week."></textarea>
+              </label>
+              <div class="outcome-status-list" id="outcomeStatus7S"></div>
+            </div>
           </div>
           <div>
             <h3>Available lessons this week</h3>

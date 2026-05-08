@@ -13,7 +13,11 @@ const periods = [
 const timetable = [
   { day: "Monday", period: "P1", className: "9.4" },
   { day: "Monday", period: "P2", className: "10" },
+  { day: "Monday", period: "P6", className: "7S", minWeek: 4, doubleGroup: "Year 7 Science double" },
+  { day: "Monday", period: "P7", className: "7S", minWeek: 4, doubleGroup: "Year 7 Science double" },
   { day: "Tuesday", period: "P1", className: "9.2" },
+  { day: "Tuesday", period: "P4", className: "7S", minWeek: 4 },
+  { day: "Wednesday", period: "P2", className: "7S", minWeek: 4 },
   { day: "Wednesday", period: "P4", className: "9.2" },
   { day: "Wednesday", period: "P5", className: "9.4" },
   { day: "Wednesday", period: "P6", className: "10", doubleGroup: "Year 10 double" },
@@ -23,9 +27,17 @@ const timetable = [
   { day: "Thursday", period: "P4", className: "9.2", doubleGroup: "Year 9.2 double" },
   { day: "Thursday", period: "P5", className: "9.2", doubleGroup: "Year 9.2 double" },
   { day: "Friday", period: "P1", className: "9.2" },
+  { day: "Friday", period: "P2", className: "7S", minWeek: 4 },
   { day: "Friday", period: "P4", className: "9.4", doubleGroup: "Year 9.4 double" },
   { day: "Friday", period: "P5", className: "9.4", doubleGroup: "Year 9.4 double" },
   { day: "Friday", period: "P6", className: "10" }
+];
+
+const classConfigs = [
+  { id: "9.2", label: "Year 9.2", subject: "Economics and Business", minWeek: 1 },
+  { id: "9.4", label: "Year 9.4", subject: "Economics and Business", minWeek: 1 },
+  { id: "10", label: "Year 10", subject: "Economics and Business", minWeek: 1 },
+  { id: "7S", label: "Year 7 Science", subject: "Science", minWeek: 4 }
 ];
 
 const storageKey = "economics-business-term2-plans-v1";
@@ -124,7 +136,7 @@ function init() {
   document.querySelector("#prevWeek").addEventListener("click", () => changeWeek(-1));
   document.querySelector("#nextWeek").addEventListener("click", () => changeWeek(1));
   document.querySelector("#saveWeekPlan").addEventListener("click", saveWeekPlan);
-  ["weeklyOutcomes92", "weeklyOutcomes94", "weeklyOutcomes10"].forEach((id) => {
+  ["weeklyOutcomes92", "weeklyOutcomes94", "weeklyOutcomes10", "weeklyOutcomes7S"].forEach((id) => {
     document.querySelector(`#${id}`).addEventListener("blur", () => {
       saveWeekPlan(false);
       renderOutcomeStatuses();
@@ -177,18 +189,20 @@ function renderWeekPlanner() {
   document.querySelector("#weeklyOutcomes92").value = weekPlan.outcomesByClass["9.2"] || "";
   document.querySelector("#weeklyOutcomes94").value = weekPlan.outcomesByClass["9.4"] || "";
   document.querySelector("#weeklyOutcomes10").value = weekPlan.outcomesByClass["10"] || "";
+  document.querySelector("#weeklyOutcomes7S").value = weekPlan.outcomesByClass["7S"] || "";
+  document.querySelector("#year7ScienceOutcomes").hidden = !isClassActive("7S");
   renderOutcomeStatuses();
 
   const list = document.querySelector("#availabilityList");
   list.innerHTML = "";
-  timetable.forEach((slot) => {
+  getActiveTimetable().forEach((slot) => {
     const period = getPeriod(slot.period);
     const key = slotBaseKey(slot);
     const row = document.createElement("label");
     row.className = "availability-row";
     row.innerHTML = `
       <input type="checkbox" data-availability-key="${key}" ${weekPlan.unavailable[key] ? "" : "checked"}>
-      <span>Year ${slot.className} - ${slot.day} ${slot.period} (${period.start}-${period.end})${slot.doubleGroup ? ` - ${slot.doubleGroup}` : ""}</span>
+      <span>${getClassLabel(slot.className)} - ${slot.day} ${slot.period} (${period.start}-${period.end})${slot.doubleGroup ? ` - ${slot.doubleGroup}` : ""}</span>
     `;
     row.querySelector("input").addEventListener("change", (event) => {
       const current = getWeekPlan();
@@ -203,11 +217,8 @@ function renderWeekPlanner() {
 
 function renderOutcomeStatuses() {
   const weekPlan = getWeekPlan();
-  [
-    ["9.2", "outcomeStatus92"],
-    ["9.4", "outcomeStatus94"],
-    ["10", "outcomeStatus10"]
-  ].forEach(([className, containerId]) => {
+  getActiveClasses().forEach(({ id: className }) => {
+    const containerId = getOutcomeContainerId(className);
     syncOutcomeStatuses(className);
     const outcomes = parseOutcomeItems(weekPlan.outcomesByClass[className]);
     const container = document.querySelector(`#${containerId}`);
@@ -251,6 +262,14 @@ function renderOutcomeStatuses() {
   });
 }
 
+function getOutcomeContainerId(className) {
+  if (className === "9.2") return "outcomeStatus92";
+  if (className === "9.4") return "outcomeStatus94";
+  if (className === "10") return "outcomeStatus10";
+  if (className === "7S") return "outcomeStatus7S";
+  return "";
+}
+
 function renderCalendar() {
   calendar.innerHTML = "";
   calendar.append(createHeaderCell("Period"));
@@ -265,7 +284,7 @@ function renderCalendar() {
     days.forEach((day) => {
       const cell = document.createElement("div");
       cell.className = "calendar-cell";
-      timetable
+      getActiveTimetable()
         .filter((slot) => slot.day === day && slot.period === period.period)
         .forEach((slot) => cell.append(createLessonCard(slot)));
       calendar.append(cell);
@@ -280,6 +299,35 @@ function createHeaderCell(text) {
   return cell;
 }
 
+function getActiveTimetable() {
+  return timetable.filter((slot) => selectedWeek >= (slot.minWeek || 1));
+}
+
+function getActiveClasses() {
+  return classConfigs.filter((classInfo) => selectedWeek >= classInfo.minWeek);
+}
+
+function isClassActive(className) {
+  const classInfo = getClassConfig(className);
+  return selectedWeek >= (classInfo?.minWeek || 1);
+}
+
+function getClassConfig(className) {
+  return classConfigs.find((classInfo) => classInfo.id === className);
+}
+
+function getClassLabel(className) {
+  return getClassConfig(className)?.label || `Year ${className}`;
+}
+
+function getClassSubject(className) {
+  return getClassConfig(className)?.subject || "Economics and Business";
+}
+
+function classCssId(className) {
+  return String(className).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
+
 function createLessonCard(slot) {
   const plan = getPlan(slot);
   const period = getPeriod(slot.period);
@@ -287,12 +335,12 @@ function createLessonCard(slot) {
   const hasPlan = isPlanStarted(plan);
   const button = document.createElement("button");
   button.type = "button";
-  button.className = `lesson-card class-${slot.className.replace(".", "-")}`;
+  button.className = `lesson-card class-${classCssId(slot.className)}`;
   if (unavailable) button.classList.add("unavailable");
   if (activeFilter !== "all" && activeFilter !== slot.className) button.classList.add("hidden-card");
   button.innerHTML = `
     <span class="status-row">
-      <strong>Year ${slot.className}</strong>
+      <strong>${getClassLabel(slot.className)}</strong>
       <span class="pill">${unavailable ? "Unavailable" : hasPlan ? "Planned" : "Open"}</span>
     </span>
     <small>${slot.day} ${slot.period}, ${period.start}-${period.end}${slot.doubleGroup ? ` - ${slot.doubleGroup}` : ""}</small>
@@ -307,9 +355,9 @@ function openLesson(slot) {
   const merged = { ...defaultPlan(slot, period), ...getPlan(slot) };
 
   document.querySelector("#lessonMeta").textContent = `Week ${selectedWeek} - ${slot.day} - ${slot.period}`;
-  document.querySelector("#lessonTitle").textContent = `Year ${slot.className} Lesson Plan`;
+  document.querySelector("#lessonTitle").textContent = `${getClassLabel(slot.className)} Lesson Plan`;
   setPasteContent("");
-  document.querySelector("#populatorNote").textContent = `Week ${selectedWeek}, ${slot.day} ${slot.period}, Year ${slot.className}`;
+  document.querySelector("#populatorNote").textContent = `Week ${selectedWeek}, ${slot.day} ${slot.period}, ${getClassLabel(slot.className)}`;
 
   formFields.forEach((field) => {
     const input = getFormControl(field);
@@ -842,9 +890,10 @@ function saveWeekPlan(showMessage = true) {
   current.outcomesByClass = {
     "9.2": document.querySelector("#weeklyOutcomes92").value.trim(),
     "9.4": document.querySelector("#weeklyOutcomes94").value.trim(),
-    "10": document.querySelector("#weeklyOutcomes10").value.trim()
+    "10": document.querySelector("#weeklyOutcomes10").value.trim(),
+    "7S": document.querySelector("#weeklyOutcomes7S").value.trim()
   };
-  ["9.2", "9.4", "10"].forEach((className) => syncOutcomeStatuses(className, current));
+  getActiveClasses().forEach(({ id }) => syncOutcomeStatuses(id, current));
   saveWeekPlanObject(current);
   renderOutcomeStatuses();
   renderSummary();
@@ -852,7 +901,7 @@ function saveWeekPlan(showMessage = true) {
 }
 
 function renderSummary() {
-  const weekSlots = timetable.map((slot) => ({ ...slot, plan: getPlan(slot) }));
+  const weekSlots = getActiveTimetable().map((slot) => ({ ...slot, plan: getPlan(slot) }));
   const availableSlots = weekSlots.filter((slot) => !isSlotUnavailable(slot));
   const planned = weekSlots.filter((slot) => isPlanStarted(slot.plan)).length;
   document.querySelector("#plannedCount").textContent = `${planned} / ${availableSlots.length} available`;
@@ -860,7 +909,7 @@ function renderSummary() {
   const weekPlan = getWeekPlan();
   const totalOutcomeStats = getAllOutcomeStats(weekPlan);
   document.querySelector("#coveredCount").textContent = `${totalOutcomeStats.complete} / ${totalOutcomeStats.total}`;
-  const byClass = ["9.2", "9.4", "10"].map((className) => {
+  const byClass = getActiveClasses().map(({ id: className }) => {
     const classSlots = weekSlots.filter((slot) => slot.className === className);
     const classAvailable = classSlots.filter((slot) => !isSlotUnavailable(slot));
     const classPlanned = classSlots.filter((slot) => isPlanStarted(slot.plan)).length;
@@ -875,7 +924,7 @@ function renderSummary() {
       .join("\n");
 
     return [
-      `Year ${className}`,
+      getClassLabel(className),
       `Weekly outcomes:\n${formatOutcomesForSummary(className, weekPlan)}`,
       `Outcome progress: ${outcomeStats.complete} complete, ${outcomeStats.partial} partially completed, ${outcomeStats.notStarted} haven't started (${outcomeStats.total} total)`,
       `Available lessons: ${classAvailable.length} / ${classSlots.length}`,
@@ -886,7 +935,7 @@ function renderSummary() {
   });
 
   document.querySelector("#weeklySummary").value = [
-    `Term 2 Economics and Business - Week ${selectedWeek} Summary`,
+    `Term 2 Teaching Planner - Week ${selectedWeek} Summary`,
     "",
     `Available lessons: ${availableSlots.length} / ${weekSlots.length}`,
     `Total lessons planned: ${planned} / ${availableSlots.length}`,
@@ -910,8 +959,8 @@ async function copySummary() {
 
 function defaultPlan(slot, period) {
   return {
-    learningArea: "Economics and Business",
-    gradeClass: `Year ${slot.className}`,
+    learningArea: getClassSubject(slot.className),
+    gradeClass: getClassLabel(slot.className),
     time: `${period.start}-${period.end}`,
     length: period.length
   };
@@ -935,29 +984,37 @@ function getPlan(slot) {
 
 function getWeekPlan() {
   const key = `week-${selectedWeek}`;
-  if (!weekPlans[key]) weekPlans[key] = { outcomesByClass: { "9.2": "", "9.4": "", "10": "" }, outcomeStatuses: { "9.2": {}, "9.4": {}, "10": {} }, unavailable: {} };
+  if (!weekPlans[key]) weekPlans[key] = { outcomesByClass: getEmptyClassMap(""), outcomeStatuses: getEmptyClassMap({}), unavailable: {} };
   weekPlans[key].unavailable ||= {};
-  weekPlans[key].outcomesByClass ||= { "9.2": "", "9.4": "", "10": "" };
-  weekPlans[key].outcomeStatuses ||= { "9.2": {}, "9.4": {}, "10": {} };
-  weekPlans[key].outcomeStatuses["9.2"] ||= {};
-  weekPlans[key].outcomeStatuses["9.4"] ||= {};
-  weekPlans[key].outcomeStatuses["10"] ||= {};
-  if (weekPlans[key].outcomes && !weekPlans[key].outcomesByClass["9.2"] && !weekPlans[key].outcomesByClass["9.4"] && !weekPlans[key].outcomesByClass["10"]) {
-    weekPlans[key].outcomesByClass = {
-      "9.2": weekPlans[key].outcomes,
-      "9.4": weekPlans[key].outcomes,
-      "10": weekPlans[key].outcomes
-    };
+  weekPlans[key].outcomesByClass ||= getEmptyClassMap("");
+  weekPlans[key].outcomeStatuses ||= getEmptyClassMap({});
+  classConfigs.forEach(({ id }) => {
+    weekPlans[key].outcomesByClass[id] ||= "";
+    weekPlans[key].outcomeStatuses[id] ||= {};
+  });
+  if (weekPlans[key].outcomes && !hasAnyOutcomes(weekPlans[key])) {
+    classConfigs.forEach(({ id }) => {
+      weekPlans[key].outcomesByClass[id] = weekPlans[key].outcomes;
+    });
   }
-  if (weekPlans[key].brief && !weekPlans[key].outcomesByClass["9.2"] && !weekPlans[key].outcomesByClass["9.4"] && !weekPlans[key].outcomesByClass["10"]) {
-    weekPlans[key].outcomesByClass = {
-      "9.2": weekPlans[key].brief,
-      "9.4": weekPlans[key].brief,
-      "10": weekPlans[key].brief
-    };
+  if (weekPlans[key].brief && !hasAnyOutcomes(weekPlans[key])) {
+    classConfigs.forEach(({ id }) => {
+      weekPlans[key].outcomesByClass[id] = weekPlans[key].brief;
+    });
   }
   updateCarryForwardOutcomes(weekPlans[key]);
   return weekPlans[key];
+}
+
+function getEmptyClassMap(value) {
+  return classConfigs.reduce((map, { id }) => {
+    map[id] = typeof value === "object" && value !== null ? { ...value } : value;
+    return map;
+  }, {});
+}
+
+function hasAnyOutcomes(plan) {
+  return classConfigs.some(({ id }) => Boolean(plan.outcomesByClass[id]));
 }
 
 function parseOutcomeItems(text) {
@@ -988,7 +1045,7 @@ function updateCarryForwardOutcomes(plan) {
   if (selectedWeek <= 1) return;
   const previousPlan = weekPlans[`week-${selectedWeek - 1}`];
   let changed = false;
-  ["9.2", "9.4", "10"].forEach((className) => {
+  getActiveClasses().forEach(({ id: className }) => {
     const previousUnfinished = previousPlan
       ? getUnfinishedOutcomesFromPlan(previousPlan, className)
       : getSeededCarryForwardForWeek3(className);
@@ -1009,8 +1066,10 @@ function updateCarryForwardOutcomes(plan) {
 }
 
 function getUnfinishedOutcomesFromPlan(plan, className) {
-  plan.outcomesByClass ||= { "9.2": "", "9.4": "", "10": "" };
-  plan.outcomeStatuses ||= { "9.2": {}, "9.4": {}, "10": {} };
+  plan.outcomesByClass ||= getEmptyClassMap("");
+  plan.outcomeStatuses ||= getEmptyClassMap({});
+  plan.outcomesByClass[className] ||= "";
+  plan.outcomeStatuses[className] ||= {};
   return parseOutcomeItems(plan.outcomesByClass[className])
     .filter((item) => item.type === "outcome")
     .filter((item) => (plan.outcomeStatuses[className]?.[item.id] || "not-started") !== "complete");
@@ -1044,7 +1103,7 @@ function outcomeId(text) {
 }
 
 function syncOutcomeStatuses(className, plan = getWeekPlan()) {
-  plan.outcomeStatuses ||= { "9.2": {}, "9.4": {}, "10": {} };
+  plan.outcomeStatuses ||= getEmptyClassMap({});
   plan.outcomeStatuses[className] ||= {};
   const validIds = new Set(parseOutcomeItems(plan.outcomesByClass[className]).filter((item) => item.type === "outcome").map((item) => item.id));
   Object.keys(plan.outcomeStatuses[className]).forEach((id) => {
@@ -1070,7 +1129,7 @@ function getOutcomeStats(className, plan = getWeekPlan()) {
 }
 
 function getAllOutcomeStats(plan = getWeekPlan()) {
-  return ["9.2", "9.4", "10"].reduce((total, className) => {
+  return getActiveClasses().reduce((total, { id: className }) => {
     const stats = getOutcomeStats(className, plan);
     total.total += stats.total;
     total.complete += stats.complete;
