@@ -1,7 +1,7 @@
 window.PLANNER_SNAPSHOT = {
   "app": "economics-business-weekly-planner",
   "version": 1,
-  "exportedAt": "2026-06-10T02:50:25.446Z",
+  "exportedAt": "2026-06-15T04:09:34.110Z",
   "plans": {
     "week-3|9.4|Monday|P1": {
       "learningArea": "Humanities and Social Sciences — Economics and Business",
@@ -2746,79 +2746,53 @@ window.PLANNER_SNAPSHOT = {
     },
     "week-9": {
       "outcomesByClass": {
-        "10": "Brought forward from Week 8:\n• Students will evaluate the influence of ethical decision-making on consumer behaviour and business success.\n\nNew outcomes:\nStudents will consolidate their understanding of economic performance and living standards through a comprehensive review.",
+        "10": "New outcomes:\nStudents will consolidate their understanding of economic performance and living standards through a comprehensive review.",
         "9.2": "Brought forward from Week 8:\n• Business' rights\n• Consumers rights\n• The ACCС\n\nNew outcomes:\nScams\nIdentity theft\nFinancial safety",
-        "9.4": "Brought forward from Week 8:\n• Intellectual Property (IP)\n• ATSI businesses and their share in the Australian market\n• How ATSI businesses develop opportunities in the market\n• Business' rights\n• Consumers rights\n• The ACCС\n\nNew outcomes:\nScams\nIdentity theft\nFinancial safety",
-        "7S": "Brought forward from Week 8:\n• Students understand the role of the frictional force\n• Students understand how friction can be increased and decreased.\n• Students have explored how electrostatic and magnetic forces cause motion\n• Students understand the nature and effects of magnetic field and electric field."
+        "9.4": "Brought forward from Week 8:\n• Business' rights\n• Consumers rights\n• The ACCС\n\nNew outcomes:\nScams\nIdentity theft\nFinancial safety",
+        "7S": "Brought forward from Week 8:\n• Students have explored how electrostatic and magnetic forces cause motion\n• Students understand the nature and effects of magnetic field and electric field."
       },
       "outcomeStatuses": {
         "10": {
-          "students-will-evaluate-the-influence-of-ethical-decision-making-on-consumer-beha": "not-started",
-          "students-will-consolidate-their-understanding-of-economic-performance-and-living": "not-started"
+          "students-will-consolidate-their-understanding-of-economic-performance-and-living": "complete"
         },
         "9.2": {
-          "business-rights": "not-started",
-          "consumers-rights": "not-started",
-          "the-acc": "not-started",
+          "business-rights": "complete",
+          "consumers-rights": "complete",
+          "the-acc": "complete",
           "scams": "complete",
           "identity-theft": "complete",
           "financial-safety": "complete"
         },
         "9.4": {
-          "intellectual-property-ip": "not-started",
-          "atsi-businesses-and-their-share-in-the-australian-market": "not-started",
-          "how-atsi-businesses-develop-opportunities-in-the-market": "not-started",
-          "business-rights": "not-started",
-          "consumers-rights": "not-started",
-          "the-acc": "not-started",
+          "business-rights": "complete",
+          "consumers-rights": "complete",
+          "the-acc": "complete",
           "scams": "complete",
           "identity-theft": "complete",
           "financial-safety": "complete"
         },
         "7S": {
-          "students-understand-the-role-of-the-frictional-force": "not-started",
-          "students-understand-how-friction-can-be-increased-and-decreased": "not-started",
-          "students-have-explored-how-electrostatic-and-magnetic-forces-cause-motion": "not-started",
-          "students-understand-the-nature-and-effects-of-magnetic-field-and-electric-field": "not-started"
+          "students-have-explored-how-electrostatic-and-magnetic-forces-cause-motion": "complete",
+          "students-understand-the-nature-and-effects-of-magnetic-field-and-electric-field": "complete"
         }
       },
       "unavailable": {}
     },
     "week-10": {
       "outcomesByClass": {
-        "10": "Brought forward from Week 9:\n• Students will evaluate the influence of ethical decision-making on consumer behaviour and business success.\n• Students will consolidate their understanding of economic performance and living standards through a comprehensive review.\n\nNew outcomes:\nStudents will engage in an extended inquiry into a current economic issue using unit concepts.",
-        "9.2": "Brought forward from Week 9:\n• Business' rights\n• Consumers rights\n• The ACCС\n• Scams\n• Identity theft\n• Financial safety",
-        "9.4": "Brought forward from Week 9:\n• Intellectual Property (IP)\n• ATSI businesses and their share in the Australian market\n• How ATSI businesses develop opportunities in the market\n• Business' rights\n• Consumers rights\n• The ACCС\n• Scams\n• Identity theft\n• Financial safety",
-        "7S": "Brought forward from Week 9:\n• Students understand the role of the frictional force\n• Students understand how friction can be increased and decreased.\n• Students have explored how electrostatic and magnetic forces cause motion\n• Students understand the nature and effects of magnetic field and electric field."
+        "10": "Brought forward from Week 9:\n• Students will consolidate their understanding of economic performance and living standards through a comprehensive review.\n\nNew outcomes:\nStudents will engage in an extended inquiry into a current economic issue using unit concepts.",
+        "9.2": "",
+        "9.4": "",
+        "7S": "Brought forward from Week 9:\n• Students have explored how electrostatic and magnetic forces cause motion\n• Students understand the nature and effects of magnetic field and electric field."
       },
       "outcomeStatuses": {
         "10": {
-          "students-will-evaluate-the-influence-of-ethical-decision-making-on-consumer-beha": "not-started",
           "students-will-consolidate-their-understanding-of-economic-performance-and-living": "not-started",
           "students-will-engage-in-an-extended-inquiry-into-a-current-economic-issue-using-": "not-started"
         },
-        "9.2": {
-          "business-rights": "not-started",
-          "consumers-rights": "not-started",
-          "the-acc": "not-started",
-          "scams": "not-started",
-          "identity-theft": "not-started",
-          "financial-safety": "not-started"
-        },
-        "9.4": {
-          "intellectual-property-ip": "not-started",
-          "atsi-businesses-and-their-share-in-the-australian-market": "not-started",
-          "how-atsi-businesses-develop-opportunities-in-the-market": "not-started",
-          "business-rights": "not-started",
-          "consumers-rights": "not-started",
-          "the-acc": "not-started",
-          "scams": "not-started",
-          "identity-theft": "not-started",
-          "financial-safety": "not-started"
-        },
+        "9.2": {},
+        "9.4": {},
         "7S": {
-          "students-understand-the-role-of-the-frictional-force": "not-started",
-          "students-understand-how-friction-can-be-increased-and-decreased": "not-started",
           "students-have-explored-how-electrostatic-and-magnetic-forces-cause-motion": "not-started",
           "students-understand-the-nature-and-effects-of-magnetic-field-and-electric-field": "not-started"
         }
